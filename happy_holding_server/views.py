@@ -77,17 +77,22 @@ def agent():
     return twiml_resp(response)
 
 
-@app.route('/happy/sms', methods=['POST'])
-def sms():
+@app.route('/happy/gameover', methods=['POST'])
+def gameover():
     correct = request.args.get('correct')
     total = request.args.get('total')
 
-    message_body = 'Thanks for playing Fintastic Trivia! Your score was {} out of {}'.format(correct, str(int(total)+1))
+    message_body = 'Thanks for playing Fintastic Trivia! Your score was {} out of {}'.format(correct,
+                                                                                             str(int(total) + 1))
 
-    caller = request.values.get('From')
-    twilio_number = "+16139810982"
+    # the magic 'from' number used for testing
+    twilio_number = "+15005550006"
+    caller = "+16139810982"
+
     # twilio_number = request.values.get('To')
-    send_sms(caller, twilio_number, message_body)
+    # caller = request.values.get('From')
+
+    _send_sms(caller, twilio_number, message_body)
 
     voice_resp = VoiceResponse()
     voice_resp.say(message_body)
@@ -128,7 +133,7 @@ def answer():
     if i < 2:
         response.redirect(url_for('ask', repeat=i + 1, score=score))
     else:
-        response.redirect(url_for('sms', correct=score, total=i))
+        response.redirect(url_for('gameover', correct=score, total=i))
 
     return twiml_resp(response)
 
@@ -151,7 +156,7 @@ def ask():
     ) as g:
         g.say("Question " + str(i + 1) + ",,")
         g.say(message=str(q[0])
-                      + "Please enter your answer now using the number pad,,,,,,", loop=3)
+                      + "Please enter your answer now using the number pad,,,,,,", loop=1)
     return twiml_resp(response)
 
 
@@ -175,7 +180,7 @@ def _play_music(response):
     response.redirect(url_for('music'))
 
 
-def send_sms(to_number, from_number, message):
+def _send_sms(to_number, from_number, message):
     client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
     try:
@@ -188,5 +193,3 @@ def send_sms(to_number, from_number, message):
         # check for invalid mobile number error from Twilio
         if exception.code == 21614:
             print("Uh oh, looks like this caller can't receive SMS messages.")
-
-
