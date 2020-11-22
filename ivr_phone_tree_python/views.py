@@ -13,6 +13,7 @@ from twilio.twiml.voice_response import VoiceResponse
 from ivr_phone_tree_python import app
 from ivr_phone_tree_python.view_helpers import twiml
 
+from .db import get_db
 
 @app.route('/')
 @app.route('/ivr')
@@ -31,14 +32,14 @@ def welcome():
               "Press 2 for same calming music.", loop=3)
     return twiml(response)
 
-
 @app.route('/ivr/menu', methods=['POST'])
 def menu():
+
     selected_option = request.form['Digits']
     option_actions = {'1': _begin,
                       '2': _list_planets}
 
-    if option_actions.has_key(selected_option):
+    if selected_option in option_actions:
         response = VoiceResponse()
         option_actions[selected_option](response)
         return twiml(response)
@@ -63,6 +64,17 @@ def planets():
 
 # private methods
 
+def _give_instructions(response):
+
+    db = get_db()
+    ratings = db.execute(
+        'SELECT joint_id, AVG(rating) FROM ratings GROUP BY joint_id'
+    ).fetchall()
+
+    for r in ratings:
+        response.say(str(r[0]))
+        # ratings_json.append({'joint_id': r[0], 'rating': r[1]})
+
 def _begin(response):
     with open('questions.json') as f:
         data = json.load(f)
@@ -72,9 +84,6 @@ def _begin(response):
                          "Press 2 for " + p['answers'][1] +
                          "Press 3 for " + p['answers'][2],
                          voice="alice", language="en-GB")
-
-    response.say("Thank you for calling the E T Phone Home Service - the " +
-                 "adventurous alien's first choice in intergalactic travel")
 
     response.hangup()
     return response
