@@ -31,6 +31,7 @@ To try it out for yourself:
    $ cd happy-holding
    ```
 
+
 1. Create a new virtual environment.
 
         ```bash
@@ -50,11 +51,13 @@ To try it out for yourself:
         venv\Scripts\activate
         ```
    
+
 1. Install the dependencies.
 
     ```bash
     pip install -r requirements.txt
     ```
+
 
 1. Start the server.
 
@@ -62,18 +65,19 @@ To try it out for yourself:
     python manage.py runserver
     ```
 
+
 1. Make your application accessible to the wider Internet using [ngrok](https://ngrok.com/).
 
     ```bash
     ngrok http 5000 -host-header="localhost:5000"
     ```
 
+
 1. Configure Twilio to call your webhooks
 
-  You will also need to configure Twilio to call your application when calls are
-  received in your [*Twilio Number*](https://www.twilio.com/user/account/messaging/phone-numbers).
-  The voice url should look something like this:
+  - Configure Twilio to call your application when calls are received in your [*Twilio Number*](https://www.twilio.com/user/account/messaging/phone-numbers).
+  - The voice url should look something like this:
 
-  ```
-  http://<your-ngrok-subdomain>.ngrok.io/happy/welcome
-  ```
+    ```
+    http://<your-ngrok-subdomain>.ngrok.io/happy/welcome
+    ```
