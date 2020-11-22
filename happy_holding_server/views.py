@@ -19,53 +19,39 @@ from .db import get_db
 
 
 @app.route('/')
-@app.route('/ivr')
+@app.route('/happy')
 def home():
     return render_template('index.html')
 
 
-@app.route('/ivr/welcome', methods=['POST'])
+@app.route('/happy/welcome', methods=['POST'])
 def welcome():
     response = VoiceResponse()
     with response.gather(
             num_digits=1, action=url_for('menu'), method="POST"
     ) as g:
-        g.say(message="Thank you for choosing to play this fintastic game." +
-                      "Please press 1 to begin,,," +
-                      "or press 2 for same calming music,,,", loop=3)
+        g.say(message="Hello, thank you for calling,,," +
+                      "While you wait to speak to a representative, consider playing our fintastic game! "
+                      "Please press 1 to start the quiz,,," +
+                      "or press 2 for for regular hold music,,,,,", loop=3)
     return twiml_resp(response)
 
 
-@app.route('/ivr/menu', methods=['POST'])
+@app.route('/happy/menu', methods=['POST'])
 def menu():
+    response = VoiceResponse()
     selected_option = request.form['Digits']
     option_actions = {'1': _start_questions,
                       '2': _play_music}
 
     if selected_option in option_actions:
-        response = VoiceResponse()
         option_actions[selected_option](response)
         return twiml_resp(response)
 
-    return _redirect_welcome()
+    return twiml_resp(response)
 
 
-@app.route('/ivr/planets', methods=['POST'])
-def planets():
-    selected_option = request.form['Digits']
-    option_actions = {'2': "+12024173378",
-                      '3': "+12027336386",
-                      "4": "+12027336637"}
-
-    if selected_option in option_actions:
-        response = VoiceResponse()
-        response.dial(option_actions[selected_option])
-        return twiml_resp(response)
-
-    return _redirect_welcome()
-
-
-@app.route('/ivr/agent', methods=['POST'])
+@app.route('/happy/agent', methods=['POST'])
 def agent():
     response = VoiceResponse()
     response.say(
@@ -78,23 +64,24 @@ def agent():
     return twiml_resp(response)
 
 
-@app.route('/ivr/sms', methods=['POST'])
+@app.route('/happy/sms', methods=['POST'])
 def sms():
     correct = request.args.get('correct')
     total = request.args.get('total')
 
-    response = MessagingResponse()
-    message_body = 'Thanks for playing Fintastic Trivia! You score was {} out of {}'.format(correct, total)
-    response.message(message_body)
+    message_body = 'Thanks for playing Fintastic Trivia! Your score was {} out of {}'.format(correct, total+1)
+
+    # response = MessagingResponse()
+    # response.message(message_body)
 
     voice_resp = VoiceResponse()
     voice_resp.say(message_body)
 
-    response.redirect(url_for('agent'))
-    return twiml_resp(response)
+    voice_resp.redirect(url_for('agent'))
+    return twiml_resp(voice_resp)
 
 
-@app.route('/ivr/answer', methods=['POST'])
+@app.route('/happy/answer', methods=['POST'])
 def answer():
     n = int(request.args.get('question'))
     i = int(request.args.get('repeat'))
@@ -103,7 +90,7 @@ def answer():
     db = get_db()
 
     question = db.execute(
-        'SELECT answer, feedback FROM testquestions2 WHERE question_id=?', str(n)
+        'SELECT correct, feedback FROM questions WHERE question_id=?', str(n)
     ).fetchone()
 
     correct = int(question[0])
@@ -115,7 +102,7 @@ def answer():
         response.say("That's right!")
         score += 1
     else:
-        response.say("So close!, The correct answer was " + str(correct))
+        response.say("So close!")
 
     # returns feedback
     response.say(question[1])
@@ -131,7 +118,7 @@ def answer():
     return twiml_resp(response)
 
 
-@app.route('/ivr/ask', methods=['POST'])
+@app.route('/happy/ask', methods=['POST'])
 def ask():
     i = int(request.args.get('repeat'))
     score = int(request.args.get('score'))
@@ -139,17 +126,17 @@ def ask():
     response = VoiceResponse()
     db = get_db()
     questions = db.execute(
-        'SELECT question, answer FROM testquestions2'
+        'SELECT question FROM questions'
     ).fetchall()
-    n = 0
-    # n = randrange(0, 0)
+    n = i
+    # n = randrange(0, 4)
     q = questions[n]
     with response.gather(
             num_digits=1, action=url_for('answer', question=n, repeat=i, score=score), method="POST"
     ) as g:
         g.say("Question " + str(i + 1) + ",,")
         g.say(message=str(q[0])
-                      + "Please enter your answer now using the number pad,,,", loop=3)
+                      + "Please enter your answer now using the number pad,,,,,,", loop=3)
     return twiml_resp(response)
 
 
@@ -162,7 +149,7 @@ def _start_questions(response):
 def _insert_response(question, selected):
     db = get_db()
     db.execute(
-        'INSERT INTO testing'
+        'INSERT INTO log'
         ' VALUES (?, ?)',
         (question, selected)
     )
@@ -171,11 +158,3 @@ def _insert_response(question, selected):
 
 def _play_music(response):
     pass
-
-
-def _redirect_welcome():
-    response = VoiceResponse()
-    response.say("Returning to the main menu", voice="alice", language="en-GB")
-    response.redirect(url_for('welcome'))
-
-    return twiml_resp(response)
