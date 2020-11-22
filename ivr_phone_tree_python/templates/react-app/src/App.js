@@ -5,7 +5,7 @@ import logoname from "../src/Assets/logoname.png";
 function App() {
   return (
     <div className="App">
-      <img width="30%" src={logoname}/>
+      <img width="40%" src={logoname}/>
     </div>
   );
 }
