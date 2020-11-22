@@ -1,4 +1,6 @@
-﻿from flask import (
+﻿import json
+
+from flask import (
     flash,
     render_template,
     redirect,
@@ -24,16 +26,16 @@ def welcome():
     with response.gather(
         num_digits=1, action=url_for('menu'), method="POST"
     ) as g:
-        g.say(message="Thanks for calling the E T Phone Home Service. " +
-              "Please press 1 for directions." +
-              "Press 2 for a list of planets to call.", loop=3)
+        g.say(message="Thank you for choosing to play this fintastic game." +
+              "Please press 1 to begin." +
+              "Press 2 for same calming music.", loop=3)
     return twiml(response)
 
 
 @app.route('/ivr/menu', methods=['POST'])
 def menu():
     selected_option = request.form['Digits']
-    option_actions = {'1': _give_instructions,
+    option_actions = {'1': _begin,
                       '2': _list_planets}
 
     if option_actions.has_key(selected_option):
@@ -61,13 +63,15 @@ def planets():
 
 # private methods
 
-def _give_instructions(response):
-    response.say("To get to your extraction point, get on your bike and go " +
-                 "down the street. Then Left down an alley. Avoid the police" +
-                 " cars. Turn left into an unfinished housing development." +
-                 "Fly over the roadblock. Go past the moon. Soon after " +
-                 "you will see your mother ship.",
-                 voice="alice", language="en-GB")
+def _begin(response):
+    with open('questions.json') as f:
+        data = json.load(f)
+        for p in data['questions']:
+            response.say(p['question'] +
+                         "Press 1 for " + p['answers'][0] +
+                         "Press 2 for " + p['answers'][1] +
+                         "Press 3 for " + p['answers'][2],
+                         voice="alice", language="en-GB")
 
     response.say("Thank you for calling the E T Phone Home Service - the " +
                  "adventurous alien's first choice in intergalactic travel")
@@ -95,3 +99,5 @@ def _redirect_welcome():
     response.redirect(url_for('welcome'))
 
     return twiml(response)
+
+
