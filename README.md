@@ -1,52 +1,67 @@
-<a href="https://www.twilio.com">
-  <img src="https://static0.twilio.com/marketing/bundles/marketing/img/logos/wordmark-red.svg" alt="Twilio" width="250" />
+<a href="https://devpost.com/software/happy-holding">
+  <img src="" alt="Twilio" width="250" />
 </a>
 
-# IVR Phone Tree: IVR for beginners. Powered by Twilio - Python/Flask
+<div align="center">
 
-[![Build Status](https://travis-ci.org/TwilioDevEd/ivr-phone-tree-python.svg?branch=master)](https://travis-ci.org/TwilioDevEd/ivr-phone-tree-python)
+# Happy Holding
+**Ring Ring! Happy Holding :)**
 
-This is an application example implementing an automated phone line using
-Python 2.7 and [Flask](http://flask.pocoo.org/) web framework.
+---
 
-[Read the full tutorial here](https://www.twilio.com/docs/tutorials/walkthrough/ivr-phone-tree/python/flask)!
+</div>
 
-## Local Development
+## :ledger: Contents
+- [About](#beginner-about)
+- [Development Setup](#electric_plug-development-setup)
+  - [Running the webserver](#running-the-webserver)
+  - [Setting up/Installing the CLI client](#setting-upinstalling-the-cli-client)
+- [Usage](#zap-usage)
+  - [Commands](#commands)
 
-This project is built using [Flask](http://flask.pocoo.org/) web framework.
+## :beginner: About
+**Waiting on the phone** can be a painful and tedious experience. Nothing is more annoying than hearing  _** the same elevator song**_ restart over and over... Why does a **mundane activity** that we all have to go through have to be so unproductive? 
+ 
+We all agreed that this time would be better spent in a more **enjoyable** and **productive** way. With so many individuals now unemployed and tight on money, choosing the right financial service is crucial. This is where we thought, **what better opportunity to improve the financial literacy of individuals in need than while on hold?**
+ 
+By improving the financial literacy of customers while on hold, we realized we could help them become aware of critical services that they can discuss with representatives. This helps customers capitalize on their time spent with representatives. As well, we enable financial institutions to deliver more services and collect helpful information about their customers to shape their marketing and **improve future experiences**. 
 
-1. First clone this repository and `cd` into it.
+## :electric_plug: Development Setup
+
+This project is built using [Flask](http://flask.pocoo.org/) and [Twilio](https://www.twilio.com/)'s APIs.
+
+To try it out for yourself:
+
+1. Clone this repository and `cd` into it.
 
    ```bash
-   $ git clone git@github.com:TwilioDevEd/ivr-phone-tree-python.git
-   $ cd ivr-phone-tree-python
+   $ git clone git@github.com:gracewgao/happy-holding.git
+   $ cd happy-holding
    ```
 
 1. Create a new virtual environment.
 
-    - If using vanilla [virtualenv](https://virtualenv.pypa.io/en/latest/):
+        ```bash
+        pip install virtualenv
+        virtualenv venv
+        ```
+
+    - On Windows:
 
         ```bash
-        virtualenv venv
         source venv/bin/activate
         ```
-
-    - If using [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/en/latest/):
-
+   
+   - On Mac:
+    
         ```bash
-        mkvirtualenv ivr-phone-tree-python
+        venv\Scripts\activate
         ```
-
+   
 1. Install the dependencies.
 
     ```bash
     pip install -r requirements.txt
-    ```
-
-1. Make sure the tests succeed.
-
-    ```bash
-    $ coverage run manage.py test
     ```
 
 1. Start the server.
@@ -55,7 +70,7 @@ This project is built using [Flask](http://flask.pocoo.org/) web framework.
     python manage.py runserver
     ```
 
-1. Expose the application to the wider Internet using [ngrok](https://ngrok.com/).
+1. Make your application accessible to the wider Internet using [ngrok](https://ngrok.com/).
 
     ```bash
     ngrok http 5000 -host-header="localhost:5000"
@@ -68,14 +83,5 @@ This project is built using [Flask](http://flask.pocoo.org/) web framework.
   The voice url should look something like this:
 
   ```
-  http://<your-ngrok-subdomain>.ngrok.io/ivr/welcome
+  http://<your-ngrok-subdomain>.ngrok.io/happy/welcome
   ```
-
-  ![Configure Voice](http://howtodocs.s3.amazonaws.com/twilio-number-config-all-med.gif)
-
-
-## Meta
-
-* No warranty expressed or implied. Software is as is. Diggity.
-* [MIT License](http://www.opensource.org/licenses/mit-license.html)
-* Lovingly crafted by Twilio Developer Education.
