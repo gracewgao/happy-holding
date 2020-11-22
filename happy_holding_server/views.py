@@ -17,6 +17,7 @@ from happy_holding_server.view_helpers import twiml_resp
 
 from .db import get_db
 
+
 @app.route('/')
 @app.route('/ivr')
 def home():
@@ -27,16 +28,16 @@ def home():
 def welcome():
     response = VoiceResponse()
     with response.gather(
-        num_digits=1, action=url_for('menu'), method="POST"
+            num_digits=1, action=url_for('menu'), method="POST"
     ) as g:
         g.say(message="Thank you for choosing to play this fintastic game." +
-              "Please press 1 to begin,,," +
-              "or press 2 for same calming music,,,", loop=3)
+                      "Please press 1 to begin,,," +
+                      "or press 2 for same calming music,,,", loop=3)
     return twiml_resp(response)
+
 
 @app.route('/ivr/menu', methods=['POST'])
 def menu():
-
     selected_option = request.form['Digits']
     option_actions = {'1': start_questions,
                       '2': _list_planets}
@@ -63,6 +64,7 @@ def planets():
 
     return _redirect_welcome()
 
+
 @app.route('/ivr/agent', methods=['POST'])
 def agent():
     response = VoiceResponse()
@@ -75,23 +77,33 @@ def agent():
     # forward_to_agent(response)
     return twiml_resp(response)
 
+
 @app.route('/ivr/sms', methods=['GET', 'POST'])
 def sms():
     correct = request.args.get('correct')
     total = request.args.get('total')
+
     response = MessagingResponse()
     message_body = 'Thanks for playing Fintastic Trivia! You score was {} out of {}'.format(correct, total)
     response.message(message_body)
 
+    voice_resp = VoiceResponse()
+    voice_resp.say(message_body)
+
     response.redirect(url_for('agent'))
     return twiml_resp(response)
 
+
 @app.route('/ivr/answer', methods=['POST'])
 def answer():
+    n = int(request.args.get('question'))
+    i = int(request.args.get('repeat'))
+    score = int(request.args.get('score'))
+
     db = get_db()
-    n = request.args.get('question')
+
     question = db.execute(
-        'SELECT answer, feedback FROM testquestions2 WHERE question_id=?', n
+        'SELECT answer, feedback FROM testquestions2 WHERE question_id=?', str(n)
     ).fetchone()
 
     correct = int(question[0])
@@ -101,35 +113,51 @@ def answer():
 
     if correct == int(selected_option):
         response.say("That's right!")
+        score += 1
     else:
         response.say("So close!, The correct answer was " + str(correct))
 
+    # returns feedback
     response.say(question[1])
-
+    # enters into database
     insert_response(n, selected_option)
-    response.redirect(url_for('sms', correct=8, total=10))
 
+    # repeats more questions
+    if i < 3:
+        response.redirect(url_for('ask', repeat=i + 1, score=score))
+    else:
+        response.redirect(url_for('sms', correct=score, total=i))
+
+    return twiml_resp(response)
+
+
+@app.route('/ivr/ask', methods=['POST'])
+def ask():
+    i = int(request.args.get('repeat'))
+    score = int(request.args.get('score'))
+
+    response = VoiceResponse()
+    db = get_db()
+    questions = db.execute(
+        'SELECT question, answer FROM testquestions2'
+    ).fetchall()
+    n = 0
+    # n = randrange(0, 0)
+    q = questions[n]
+    with response.gather(
+            num_digits=1, action=url_for('answer', question=n, repeat=i, score=score), method="POST"
+    ) as g:
+        g.say("Question " + str(i + 1) + ",,")
+        g.say(message=str(q[0])
+                      + "Please enter your answer now using the number pad,,,", loop=3)
     return twiml_resp(response)
 
 
 # private methods
 
 def start_questions(response):
-    db = get_db()
-    questions = db.execute(
-        'SELECT question, answer FROM testquestions2'
-    ).fetchall()
+    response.redirect(url_for('ask', repeat=0, score=0))
 
-    for i in range(3):
-        n = 0
-        # n = randrange(0, 0)
-        q = questions[n]
-        with response.gather(
-            num_digits=1, action=url_for('answer', question=n), method="POST"
-        ) as g:
-            g.say("Question " + str(i + 1) + ",,")
-            g.say(message=str(q[0])
-                  + "Please enter your answer now using the number pad,,,", loop=3)
 
 def forward_to_agent(response):
     response = VoiceResponse()
@@ -144,6 +172,7 @@ def forward_to_agent(response):
         available
     )
 
+
 def insert_response(question, selected):
     db = get_db()
     db.execute(
@@ -153,30 +182,10 @@ def insert_response(question, selected):
     )
     db.commit()
 
-def _give_instructions(response):
-
-    db = get_db()
-    ratings = db.execute(
-        'SELECT joint_id, AVG(rating) FROM ratings GROUP BY joint_id'
-    ).fetchall()
-
-def _begin(response):
-    with open('questions.json') as f:
-        data = json.load(f)
-        for p in data['questions']:
-            response.say(p['question'] +
-                         "Press 1 for " + p['answers'][0] +
-                         "Press 2 for " + p['answers'][1] +
-                         "Press 3 for " + p['answers'][2],
-                         voice="alice", language="en-GB")
-
-    response.hangup()
-    return response
-
 
 def _list_planets(response):
     with response.gather(
-        numDigits=1, action=url_for('planets'), method="POST"
+            numDigits=1, action=url_for('planets'), method="POST"
     ) as g:
         g.say("To call the planet Broh doe As O G, press 2. To call the " +
               "planet DuhGo bah, press 3. To call an oober asteroid " +
@@ -193,5 +202,3 @@ def _redirect_welcome():
     response.redirect(url_for('welcome'))
 
     return twiml_resp(response)
-
-
