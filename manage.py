@@ -1,4 +1,4 @@
-from ivr_phone_tree_python import app
+from happy_holding_server import app
 from flask_script import Manager
 
 manager = Manager(app)

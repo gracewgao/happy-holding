@@ -665,3 +665,4 @@ $RECYCLE.BIN/
 .idea
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,python,macos,windows,vscode,vs
+*.db

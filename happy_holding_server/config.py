@@ -14,6 +14,6 @@ class TestConfig(DefaultConfig):
 
 
 config_env_files = {
-    'test': 'ivr_phone_tree_python.config.TestConfig',
-    'development': 'ivr_phone_tree_python.config.DevelopmentConfig',
+    'test': 'happy_holding_server.config.TestConfig',
+    'development': 'happy_holding_server.config.DevelopmentConfig',
 }
