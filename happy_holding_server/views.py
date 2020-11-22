@@ -11,8 +11,8 @@ from flask import (
 )
 from twilio.twiml.voice_response import VoiceResponse
 
-from ivr_phone_tree_python import app
-from ivr_phone_tree_python.view_helpers import twiml
+from happy_holding_server import app
+from happy_holding_server.view_helpers import twiml
 
 from .db import get_db
 

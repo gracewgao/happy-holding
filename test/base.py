@@ -1,4 +1,4 @@
-from ivr_phone_tree_python import app, configure_app
+from happy_holding_server import app, configure_app
 from flask.ext.testing import TestCase
 
 
