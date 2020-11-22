@@ -34,11 +34,11 @@ To try it out for yourself:
 
 1. Create a new virtual environment.
 
-        ```bash
-        pip install virtualenv
-        virtualenv venv
-        ```
-
+   ```bash
+   $ pip install virtualenv
+   $ virtualenv venv
+   ```
+   
     - On Windows:
 
         ```bash
