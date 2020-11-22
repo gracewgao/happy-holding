@@ -14,8 +14,8 @@ We all agreed that this time would be better spent in a more **enjoyable** and *
  
 By improving the financial literacy of customers while on hold, we realized we could help them become aware of critical services that they can discuss with representatives. This helps customers capitalize on their time spent with representatives. As well, we enable financial institutions to deliver more services and collect helpful information about their customers to shape their marketing and **improve future experiences**. 
 
-![Happy Holding](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/373/datas/gallery.jpg)
-![Happy Holding](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/369/datas/gallery.jpg)
+![Happy Holding](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/373/datas/gallery.jpg | width=200)
+![Happy Holding](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/369/datas/gallery.jpg | width=200)
 
 
 ## :electric_plug: Development Setup
