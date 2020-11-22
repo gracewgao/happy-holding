@@ -10,9 +10,10 @@ from flask import (
     url_for,
 )
 from twilio.twiml.voice_response import VoiceResponse
+from twilio.twiml.messaging_response import Message, MessagingResponse
 
 from happy_holding_server import app
-from happy_holding_server.view_helpers import twiml
+from happy_holding_server.view_helpers import twiml_resp
 
 from .db import get_db
 
@@ -29,9 +30,9 @@ def welcome():
         num_digits=1, action=url_for('menu'), method="POST"
     ) as g:
         g.say(message="Thank you for choosing to play this fintastic game." +
-              "Please press 1 to begin." +
-              "Press 2 for same calming music.", loop=3)
-    return twiml(response)
+              "Please press 1 to begin,,," +
+              "or press 2 for same calming music,,,", loop=3)
+    return twiml_resp(response)
 
 @app.route('/ivr/menu', methods=['POST'])
 def menu():
@@ -43,7 +44,7 @@ def menu():
     if selected_option in option_actions:
         response = VoiceResponse()
         option_actions[selected_option](response)
-        return twiml(response)
+        return twiml_resp(response)
 
     return _redirect_welcome()
 
@@ -58,10 +59,32 @@ def planets():
     if selected_option in option_actions:
         response = VoiceResponse()
         response.dial(option_actions[selected_option])
-        return twiml(response)
+        return twiml_resp(response)
 
     return _redirect_welcome()
 
+@app.route('/ivr/agent', methods=['POST'])
+def agent():
+    response = VoiceResponse()
+    response.say(
+        "Thanks for your patience!, You'll be redirected to the next available agent"
+    )
+    agents = ["+16139810982"]
+    available = agents[0]
+    response.dial(available)
+    # forward_to_agent(response)
+    return twiml_resp(response)
+
+@app.route('/ivr/sms', methods=['GET', 'POST'])
+def sms():
+    correct = request.args.get('correct')
+    total = request.args.get('total')
+    response = MessagingResponse()
+    message_body = 'Thanks for playing Fintastic Trivia! You score was {} out of {}'.format(correct, total)
+    response.message(message_body)
+
+    response.redirect(url_for('agent'))
+    return twiml_resp(response)
 
 @app.route('/ivr/answer', methods=['POST'])
 def answer():
@@ -79,11 +102,14 @@ def answer():
     if correct == int(selected_option):
         response.say("That's right!")
     else:
-        response.say("So close! The correct answer was " + str(correct) + question[1])
+        response.say("So close!, The correct answer was " + str(correct))
+
+    response.say(question[1])
 
     insert_response(n, selected_option)
+    response.redirect(url_for('sms', correct=8, total=10))
 
-    return twiml(response)
+    return twiml_resp(response)
 
 
 # private methods
@@ -95,15 +121,15 @@ def start_questions(response):
     ).fetchall()
 
     for i in range(3):
-        response.say("Question " + str(i+1))
         n = 0
         # n = randrange(0, 0)
         q = questions[n]
         with response.gather(
             num_digits=1, action=url_for('answer', question=n), method="POST"
         ) as g:
+            g.say("Question " + str(i + 1) + ",,")
             g.say(message=str(q[0])
-                  + "Please enter your answer now using the number pad", loop=3)
+                  + "Please enter your answer now using the number pad,,,", loop=3)
 
 def forward_to_agent(response):
     response = VoiceResponse()
@@ -112,7 +138,7 @@ def forward_to_agent(response):
     available = agents[0]
 
     response.say(
-        "Thanks for your patience! You'll be redirected to the next available agent"
+        "Thanks for your patience!, You'll be redirected to the next available agent"
     )
     response.dial(
         available
@@ -133,10 +159,6 @@ def _give_instructions(response):
     ratings = db.execute(
         'SELECT joint_id, AVG(rating) FROM ratings GROUP BY joint_id'
     ).fetchall()
-
-    for r in ratings:
-        response.say(str(r[0]))
-        # ratings_json.append({'joint_id': r[0], 'rating': r[1]})
 
 def _begin(response):
     with open('questions.json') as f:
@@ -170,6 +192,6 @@ def _redirect_welcome():
     response.say("Returning to the main menu", voice="alice", language="en-GB")
     response.redirect(url_for('welcome'))
 
-    return twiml(response)
+    return twiml_resp(response)
 
 
