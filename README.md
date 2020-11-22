@@ -1,7 +1,3 @@
-<a href="https://devpost.com/software/happy-holding">
-  <img src="" alt="Twilio" width="250" />
-</a>
-
 <div align="center">
 
 # Happy Holding
@@ -17,6 +13,12 @@
 We all agreed that this time would be better spent in a more **enjoyable** and **productive** way. With so many individuals now unemployed and tight on money, choosing the right financial service is crucial. This is where we thought, **what better opportunity to improve the financial literacy of individuals in need than while on hold?**
  
 By improving the financial literacy of customers while on hold, we realized we could help them become aware of critical services that they can discuss with representatives. This helps customers capitalize on their time spent with representatives. As well, we enable financial institutions to deliver more services and collect helpful information about their customers to shape their marketing and **improve future experiences**. 
+
+<p float="left">
+ <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/373/datas/gallery.jpg" height="300" />
+ <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/369/datas/gallery.jpg" height="300" />
+</p>
+
 
 ## :electric_plug: Development Setup
 
