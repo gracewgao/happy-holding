@@ -39,8 +39,8 @@ def welcome():
 @app.route('/ivr/menu', methods=['POST'])
 def menu():
     selected_option = request.form['Digits']
-    option_actions = {'1': start_questions,
-                      '2': _list_planets}
+    option_actions = {'1': _start_questions,
+                      '2': _play_music}
 
     if selected_option in option_actions:
         response = VoiceResponse()
@@ -78,7 +78,7 @@ def agent():
     return twiml_resp(response)
 
 
-@app.route('/ivr/sms', methods=['GET', 'POST'])
+@app.route('/ivr/sms', methods=['POST'])
 def sms():
     correct = request.args.get('correct')
     total = request.args.get('total')
@@ -120,10 +120,10 @@ def answer():
     # returns feedback
     response.say(question[1])
     # enters into database
-    insert_response(n, selected_option)
+    _insert_response(n, selected_option)
 
     # repeats more questions
-    if i < 3:
+    if i < 2:
         response.redirect(url_for('ask', repeat=i + 1, score=score))
     else:
         response.redirect(url_for('sms', correct=score, total=i))
@@ -155,25 +155,11 @@ def ask():
 
 # private methods
 
-def start_questions(response):
+def _start_questions(response):
     response.redirect(url_for('ask', repeat=0, score=0))
 
 
-def forward_to_agent(response):
-    response = VoiceResponse()
-
-    agents = ["+16139810982"]
-    available = agents[0]
-
-    response.say(
-        "Thanks for your patience!, You'll be redirected to the next available agent"
-    )
-    response.dial(
-        available
-    )
-
-
-def insert_response(question, selected):
+def _insert_response(question, selected):
     db = get_db()
     db.execute(
         'INSERT INTO testing'
@@ -183,17 +169,8 @@ def insert_response(question, selected):
     db.commit()
 
 
-def _list_planets(response):
-    with response.gather(
-            numDigits=1, action=url_for('planets'), method="POST"
-    ) as g:
-        g.say("To call the planet Broh doe As O G, press 2. To call the " +
-              "planet DuhGo bah, press 3. To call an oober asteroid " +
-              "to your location, press 4. To go back to the main menu " +
-              " press the star key.",
-              voice="alice", language="en-GB", loop=3)
-
-    return response
+def _play_music(response):
+    pass
 
 
 def _redirect_welcome():
