@@ -1,23 +1,15 @@
-﻿import json
-from random import randrange
-
-from flask import (
-    flash,
+﻿from flask import (
     render_template,
-    redirect,
     request,
-    session,
     url_for,
 )
 from twilio.base.exceptions import TwilioRestException
-from twilio.twiml.voice_response import VoiceResponse, Play
-
-from settings import ACCOUNT_SID, AUTH_TOKEN
 from twilio.rest import Client
+from twilio.twiml.voice_response import VoiceResponse
 
 from happy_holding_server import app
 from happy_holding_server.view_helpers import twiml_resp
-
+from settings import ACCOUNT_SID, AUTH_TOKEN
 from .db import get_db
 
 
@@ -82,8 +74,9 @@ def gameover():
     correct = request.args.get('correct')
     total = request.args.get('total')
 
-    message_body = 'Thanks for playing Fintastic Trivia! Your score was {} out of {}'.format(correct,
-                                                                                             str(int(total) + 1))
+    message_body = 'Thanks for playing Fintastic Trivia! Your score was {} out of {}, and you have entered {} entries into our prize raffle!'.format(
+        correct,
+        str(int(total) + 1), correct)
 
     # the magic 'from' number used for testing
     twilio_number = "+15005550006"
@@ -129,7 +122,7 @@ def answer():
     # enters into database
     _insert_response(n, selected_option)
 
-    # repeats more questions
+    # repeats 3 questions for demo purposes (simulates the process of waiting for an agent)
     if i < 2:
         response.redirect(url_for('ask', repeat=i + 1, score=score))
     else:
@@ -148,8 +141,10 @@ def ask():
     questions = db.execute(
         'SELECT question FROM questions'
     ).fetchall()
+    # sets n = i for testing purposes
     n = i
-    # n = randrange(0, 4)
+    # generates a random question from 1 to x when database is populated with more entries
+    # n = randrange(0, x)
     q = questions[n]
     with response.gather(
             num_digits=1, action=url_for('answer', question=n, repeat=i, score=score), method="POST"
