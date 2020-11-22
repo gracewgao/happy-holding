@@ -11,14 +11,6 @@
 
 </div>
 
-## :ledger: Contents
-- [About](#beginner-about)
-- [Development Setup](#electric_plug-development-setup)
-  - [Running the webserver](#running-the-webserver)
-  - [Setting up/Installing the CLI client](#setting-upinstalling-the-cli-client)
-- [Usage](#zap-usage)
-  - [Commands](#commands)
-
 ## :beginner: About
 **Waiting on the phone** can be a painful and tedious experience. Nothing is more annoying than hearing  _** the same elevator song**_ restart over and over... Why does a **mundane activity** that we all have to go through have to be so unproductive? 
  
