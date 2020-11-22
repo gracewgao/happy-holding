@@ -1,4 +1,5 @@
 ﻿import json
+from random import randrange
 
 from flask import (
     flash,
@@ -36,7 +37,7 @@ def welcome():
 def menu():
 
     selected_option = request.form['Digits']
-    option_actions = {'1': _begin,
+    option_actions = {'1': start_questions,
                       '2': _list_planets}
 
     if selected_option in option_actions:
@@ -62,7 +63,69 @@ def planets():
     return _redirect_welcome()
 
 
+@app.route('/ivr/answer', methods=['POST'])
+def answer():
+    db = get_db()
+    n = request.args.get('question')
+    question = db.execute(
+        'SELECT answer, feedback FROM testquestions2 WHERE question_id=?', n
+    ).fetchone()
+
+    correct = int(question[0])
+    selected_option = request.form['Digits']
+
+    response = VoiceResponse()
+
+    if correct == int(selected_option):
+        response.say("That's right!")
+    else:
+        response.say("So close! The correct answer was " + str(correct) + question[1])
+
+    insert_response(n, selected_option)
+
+    return twiml(response)
+
+
 # private methods
+
+def start_questions(response):
+    db = get_db()
+    questions = db.execute(
+        'SELECT question, answer FROM testquestions2'
+    ).fetchall()
+
+    for i in range(3):
+        response.say("Question " + str(i+1))
+        n = 0
+        # n = randrange(0, 0)
+        q = questions[n]
+        with response.gather(
+            num_digits=1, action=url_for('answer', question=n), method="POST"
+        ) as g:
+            g.say(message=str(q[0])
+                  + "Please enter your answer now using the number pad", loop=3)
+
+def forward_to_agent(response):
+    response = VoiceResponse()
+
+    agents = ["+16139810982"]
+    available = agents[0]
+
+    response.say(
+        "Thanks for your patience! You'll be redirected to the next available agent"
+    )
+    response.dial(
+        available
+    )
+
+def insert_response(question, selected):
+    db = get_db()
+    db.execute(
+        'INSERT INTO testing'
+        ' VALUES (?, ?)',
+        (question, selected)
+    )
+    db.commit()
 
 def _give_instructions(response):
 
