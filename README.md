@@ -15,8 +15,8 @@ We all agreed that this time would be better spent in a more **enjoyable** and *
 By improving the financial literacy of customers while on hold, we realized we could help them become aware of critical services that they can discuss with representatives. This helps customers capitalize on their time spent with representatives. As well, we enable financial institutions to deliver more services and collect helpful information about their customers to shape their marketing and **improve future experiences**. 
 
 <p float="left">
- <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/373/datas/gallery.jpg" height="300" />
- <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/369/datas/gallery.jpg" height="300" />
+ <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/373/datas/gallery.jpg" width="400" /><br/>
+ <img src="https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/293/369/datas/gallery.jpg" width="400" />
 </p>
 
 
@@ -41,13 +41,13 @@ To try it out for yourself:
    $ virtualenv venv
    ```
    
-    - On Windows:
+    - On Mac:
 
         ```bash
         source venv/bin/activate
         ```
    
-   - On Mac:
+   - On Windows:
     
         ```bash
         venv\Scripts\activate
